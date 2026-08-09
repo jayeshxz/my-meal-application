@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY MESS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2430; --ink-2:#232C3A; --ink-3:#2C3646;
+    --gold:#D9A02B; --gold-dark:#B9841E; --gold-soft:rgba(217,160,43,0.14);
+    --clay:#C1502E; --clay-soft:rgba(193,80,46,0.12);
+    --leaf:#3F7A5C; --leaf-soft:rgba(63,122,92,0.12);
+    --paper:#FBF7EE; --paper-2:#F3ECDB; --line:#E4D9BE;
+    --text:#23272E; --muted:#7A7263; --muted-2:#A99F8A;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; min-height:100%; font-family:'Inter',sans-serif; background:var(--paper); color:var(--text); }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  button{ font-family:inherit; }
+  .hidden{ display:none !important; }
+
+  /* ---------------- Shared shell ---------------- */
+  .topbar{
+    background:var(--ink);
+    background-image:linear-gradient(180deg, var(--ink-3), var(--ink));
+    color:var(--paper);
+    padding:16px 26px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:30;
+    box-shadow:0 3px 12px rgba(0,0,0,0.18);
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Sora',sans-serif; font-weight:800; font-size:15px; color:var(--ink);
+  }
+  .brand-name{ font-family:'Sora',sans-serif; font-weight:700; font-size:17px; letter-spacing:0.3px; }
+  .brand-name small{ display:block; font-family:'Inter',sans-serif; font-weight:400; font-size:10px; color:#A9B2C2; letter-spacing:1.5px; }
+  .top-actions{ display:flex; align-items:center; gap:10px; }
+  .role-chip{
+    font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
+    color:#D8DEE9; padding:5px 11px; border-radius:20px;
+  }
+  .ghost-btn{
+    background:transparent; border:1px solid rgba(255,255,255,0.2); color:#EFE9DA;
+    padding:8px 14px; border-radius:8px; font-size:12.5px; cursor:pointer; transition:background .15s;
+  }
+  .ghost-btn:hover{ background:rgba(255,255,255,0.08); }
+
+  .screen{ max-width:1120px; margin:0 auto; padding:34px 24px 70px; }
+  .screen.narrow{ max-width:520px; }
+
+  h1.page-title{ font-family:'Sora',sans-serif; font-size:26px; font-weight:700; margin:0 0 6px; }
+  p.page-sub{ color:var(--muted); font-size:13.5px; margin:0 0 26px; line-height:1.6; }
+
+  .card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+  }
+  .card + .card{ margin-top:18px; }
+
+  label{ display:block; font-size:12.5px; font-weight:600; color:var(--text); margin:14px 0 6px; }
+  label:first-child{ margin-top:0; }
+  input[type=text], input[type=tel], input[type=email], input[type=password], input[type=number], input[type=date], select, textarea{
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:9px;
+    font-size:14px; font-family:'Inter',sans-serif; color:var(--text); background:var(--paper);
+    outline:none; transition:border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus{ border-color:var(--gold); }
+  textarea{ resize:vertical; min-height:70px; }
+  .hint{ font-size:11px; color:var(--muted-2); margin-top:5px; }
+
+  .file-row{ display:flex; align-items:center; gap:12px; }
+  .file-preview{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--paper-2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;
+    color:var(--muted-2); font-size:11px;
+  }
+  .file-preview img{ width:100%; height:100%; object-fit:cover; }
+  .file-btn{
+    border:1px dashed var(--line); background:var(--paper); padding:9px 14px; border-radius:8px;
+    font-size:12.5px; color:var(--muted); cursor:pointer;
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px 22px; border-radius:10px; border:none; font-size:14px; font-weight:600;
+    cursor:pointer; transition:transform .12s, opacity .12s, background .15s;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-gold{ background:var(--gold); color:var(--ink); }
+  .btn-gold:hover{ background:var(--gold-dark); }
+  .btn-ink{ background:var(--ink); color:var(--paper); }
+  .btn-ink:hover{ background:var(--ink-3); }
+  .btn-outline{ background:transparent; border:1px solid var(--line); color:var(--text); }
+  .btn-outline:hover{ background:var(--paper-2); }
+  .btn-block{ width:100%; }
+  .btn:disabled{ opacity:0.45; cursor:default; transform:none; }
+
+  .row-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:520px){ .row-2{ grid-template-columns:1fr; } }
+
+  .error-text{ color:var(--clay); font-size:12px; margin-top:8px; }
+
+  /* ---------------- Landing / role select ---------------- */
+  .role-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:8px; }
+  @media (max-width:560px){ .role-grid{ grid-template-columns:1fr; } }
+  .role-card{
+    background:var(--white); border:1px solid var(--line); border-radius:16px;
+    padding:26px; cursor:pointer; transition:border-color .15s, transform .15s; text-align:left;
+  }
+  .role-card:hover{ border-color:var(--gold); transform:translateY(-2px); }
+  .role-icon{
+    width:44px;height:44px;border-radius:12px; margin-bottom:14px;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .role-icon.host{ background:var(--gold-soft); }
+  .role-icon.student{ background:var(--leaf-soft); }
+  .role-card h3{ font-family:'Sora',sans-serif; font-size:17px; margin:0 0 6px; }
+  .role-card p{ font-size:12.5px; color:var(--muted); margin:0; line-height:1.6; }
+
+  .hero-mark{
+    width:64px;height:64px;border-radius:16px; margin:0 auto 18px;
+    background:linear-gradient(135deg, var(--gold), var(--gold-dark));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Sora',sans-serif; font-weight:800; font-size:26px; color:var(--ink);
+  }
+
+  /* ---------------- Stat cards ---------------- */
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+  @media (max-width:800px){ .stat-grid{ grid-template-columns:1fr 1fr; } }
+  .stat-card{ background:var(--white); border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+  .stat-label{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2); margin-bottom:8px; }
+  .stat-value{ font-family:'Sora',sans-serif; font-size:24px; font-weight:700; }
+  .stat-value.gold{ color:var(--gold-dark); }
+  .stat-value.clay{ color:var(--clay); }
+  .stat-value.leaf{ color:var(--leaf); }
+
+  /* ---------------- Tabs ---------------- */
+  .tabbar{ display:flex; gap:6px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+  .tabbtn{
+    background:none; border:none; padding:10px 16px; font-size:13px; font-weight:600;
+    color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .tabbtn.active{ color:var(--ink); border-bottom-color:var(--gold); }
+
+  .sub-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    padding:13px 18px; border-radius:12px; margin-bottom:20px; font-size:13px;
+  }
+  .sub-banner.active{ background:var(--leaf-soft); color:var(--leaf); }
+  .sub-banner.grace{ background:var(--gold-soft); color:var(--gold-dark); }
+  .sub-banner.expired{ background:var(--clay-soft); color:var(--clay); }
+
+  /* ---------------- Student list ---------------- */
+  .student-row{
+    display:flex; align-items:center; gap:14px; padding:13px 4px;
+    border-bottom:1px solid var(--paper-2); cursor:pointer;
+  }
+  .student-row:last-child{ border-bottom:none; }
+  .student-row:hover{ background:var(--paper-2); border-radius:8px; }
+  .avatar-circle{
+    width:38px;height:38px;border-radius:50%; background:var(--paper-2);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;
+    font-family:'Sora',sans-serif; font-weight:700; font-size:14px; color:var(--muted);
+    border:1px solid var(--line);
+  }
+  .avatar-circle img{ width:100%; height:100%; object-fit:cover; }
+  .student-main{ flex:1; min-width:0; }
+  .student-name{ font-weight:600; font-size:13.5px; }
+  .student-sub{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .status-pill{
+    font-size:10.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;
+    padding:4px 10px; border-radius:20px; flex-shrink:0;
+  }
+  .status-pill.paid{ background:var(--leaf-soft); color:var(--leaf); }
+  .status-pill.pending{ background:var(--clay-soft); color:var(--clay); }
+  .amount-text{ font-size:13px; font-weight:600; width:76px; text-align:right; flex-shrink:0; }
+
+  .empty-note{ text-align:center; color:var(--muted-2); font-size:13px; padding:34px 10px; }
+
+  /* ---------------- Settings ---------------- */
+  .qr-box{ display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
+  .qr-img{ width:150px;height:150px; border-radius:10px; border:1px solid var(--line); background:var(--white); padding:8px; }
+  .id-pill{
+    display:inline-flex; align-items:center; gap:8px; background:var(--paper-2); border:1px solid var(--line);
+    border-radius:9px; padding:9px 13px; font-size:13px; margin-top:6px;
+  }
+  .copy-btn{ background:none;border:none;color:var(--gold-dark);cursor:pointer;font-size:12px;font-weight:600; }
+
+  /* ---------------- Student join / dashboard ---------------- */
+  .plan-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
+  @media (max-width:520px){ .plan-grid{ grid-template-columns:1fr; } }
+  .plan-option{
+    border:1.5px solid var(--line); border-radius:12px; padding:14px 16px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .plan-option:hover{ border-color:var(--gold); }
+  .plan-option.selected{ border-color:var(--gold); background:var(--gold-soft); }
+  .plan-option .pt{ font-weight:700; font-size:13.5px; }
+  .plan-option .ps{ font-size:11.5px; color:var(--muted); margin-top:3px; }
+
+  .ring-wrap{ display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
+  .ring-info .rk{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2); margin-bottom:4px; }
+  .ring-info .rv{ font-family:'Sora',sans-serif; font-size:20px; font-weight:700; margin-bottom:14px; }
+
+  .instructions-box{
+    background:var(--paper-2); border:1px dashed var(--line); border-radius:12px; padding:16px 18px;
+    font-size:13px; line-height:1.7; color:var(--text); white-space:pre-line;
+  }
+
+  /* ---------------- Payment modal ---------------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(27,36,48,0.55); display:none;
+    align-items:center; justify-content:center; z-index:80; padding:20px;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background:var(--white); border-radius:16px; max-width:420px; width:100%;
+    padding:26px; position:relative; animation:rise .2s ease-out;
+  }
+  @keyframes rise{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .modal h3{ font-family:'Sora',sans-serif; font-size:18px; margin:0 0 4px; }
+  .modal .amount-big{ font-family:'Sora',sans-serif; font-size:32px; font-weight:800; color:var(--ink); margin:10px 0 2px; }
+  .modal-close{ position:absolute; top:16px; right:16px; background:none; border:none; cursor:pointer; color:var(--muted); }
+  .demo-flag{
+    background:var(--clay-soft); color:var(--clay); font-size:11px; padding:8px 12px; border-radius:8px; margin:14px 0; line-height:1.5;
+  }
+  .detail-modal-overlay{
+    position:fixed; inset:0; background:rgba(27,36,48,0.5); display:none; align-items:flex-start; justify-content:center;
+    padding:40px 20px; overflow-y:auto; z-index:70;
+  }
+  .detail-modal-overlay.open{ display:flex; }
+  .detail-modal{ background:var(--white); border-radius:16px; max-width:460px; width:100%; padding:24px; position:relative; }
+
+  /* Thali progress ring */
+  .thali-ring{ position:relative; width:120px; height:120px; flex-shrink:0; }
+  .thali-ring svg{ transform:rotate(-90deg); }
+  .thali-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .thali-center .num{ font-family:'Sora',sans-serif; font-size:24px; font-weight:800; color:var(--ink); line-height:1; }
+  .thali-center .lbl{ font-size:9.5px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2); margin-top:3px; }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar" id="topbar">
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <div class="brand-name">MY MESS<small>Meal subscriptions, sorted</small></div>
+  </div>
+  <div class="top-actions">
+    <span class="role-chip hidden" id="roleChip"></span>
+    <button class="ghost-btn hidden" id="switchRoleBtn">Switch role / demo other side</button>
+  </div>
+</div>
+
+<!-- ============ SCREEN: LANDING ============ -->
+<div class="screen narrow" id="screen-landing">
+  <div style="text-align:center; margin-bottom:26px;">
+    <div class="hero-mark">M</div>
+    <h1 class="page-title" style="text-align:center;">Run your mess like a business</h1>
+    <p class="page-sub" style="text-align:center;">One dashboard for meal plans, monthly dues, and who still owes you money.</p>
+  </div>
+  <div class="role-grid">
+    <div class="role-card" id="pickHost">
+      <div class="role-icon host">🍛</div>
+      <h3>I run a mess</h3>
+      <p>Create your community, set your monthly charge, and track who's paid.</p>
+    </div>
+    <div class="role-card" id="pickStudent">
+      <div class="role-icon student">🎓</div>
+      <h3>I'm a student</h3>
+      <p>Join your mess with an ID, pick your plan, and track your cycle.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCREEN: HOST ONBOARDING ============ -->
+<div class="screen narrow hidden" id="screen-host-onboard">
+  <h1 class="page-title">Set up your mess</h1>
+  <p class="page-sub">Takes two minutes. You'll get a Community ID, password, and QR code students use to join.</p>
+  <div class="card">
+    <label>Mess / community name</label>
+    <input type="text" id="hoMessName" placeholder="e.g. Sharma Mess">
+
+    <div class="row-2">
+      <div>
+        <label>Monthly charge (₹)</label>
+        <input type="number" id="hoMonthly" placeholder="2200">
+      </div>
+      <div>
+        <label>Yearly charge (₹)</label>
+        <input type="number" id="hoYearly" placeholder="24000">
+      </div>
+    </div>
+
+    <label>Your UPI ID (to receive payments)</label>
+    <input type="text" id="hoUpi" placeholder="yourname@upi">
+
+    <label>Instructions for students</label>
+    <textarea id="hoInstructions" placeholder="Lunch 12–2 PM, Dinner 8–10 PM. Mess closed Sundays."></textarea>
+
+    <div class="card" style="background:var(--paper-2); border-color:var(--line); margin-top:18px;">
+      <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:14px; margin-bottom:4px;">Hosting subscription</div>
+      <p style="font-size:12.5px; color:var(--muted); margin:0 0 12px; line-height:1.6;">
+        Hosting a community costs <strong class="mono">$1/month</strong> or <strong class="mono">$11/year</strong>.
+        If a subscription lapses, you get a 5-day grace period before the dashboard locks.
+      </p>
+      <div class="row-2">
+        <label class="plan-option" id="subMonthlyOpt" style="margin:0;">
+          <div class="pt">Monthly</div>
+          <div class="ps mono">$1.00 / month</div>
+        </label>
+        <label class="plan-option selected" id="subYearlyOpt" style="margin:0;">
+          <div class="pt">Yearly <span style="color:var(--leaf); font-weight:600;">· save 8%</span></div>
+          <div class="ps mono">$11.00 / year</div>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn btn-gold btn-block" id="hoCreateBtn" style="margin-top:20px;">Subscribe & create community</button>
+    <div class="error-text hidden" id="hoError"></div>
+  </div>
+</div>
+
+<!-- ============ SCREEN: HOST CREATED (ID/PASS/QR) ============ -->
+<div class="screen narrow hidden" id="screen-host-created">
+  <h1 class="page-title">You're live 🎉</h1>
+  <p class="page-sub">Share this with your students so they can join your mess.</p>
+  <div class="card" style="text-align:center;">
+    <div class="qr-box" style="justify-content:center;">
+      <img class="qr-img" id="hcQrImg" alt="Join QR code">
+      <div style="text-align:left;">
+        <div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2);">Community ID</div>
+        <div class="id-pill mono" id="hcIdPill">—</div>
+        <div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2); margin-top:12px;">Password</div>
+        <div class="id-pill mono" id="hcPassPill">—</div>
+      </div>
+    </div>
+    <button class="btn btn-ink btn-block" id="hcGoDashboard" style="margin-top:22px;">Go to dashboard</button>
+  </div>
+</div>
+
+<!-- ============ SCREEN: HOST DASHBOARD ============ -->
+<div class="screen hidden" id="screen-host-dash">
+  <h1 class="page-title" id="hdMessName">Your mess</h1>
+  <p class="page-sub">Overview of this month's cycle.</p>
+
+  <div class="sub-banner" id="hdSubBanner"></div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total students</div>
+      <div class="stat-value" id="hdTotalStudents">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Expected this cycle</div>
+      <div class="stat-value gold mono" id="hdExpected">₹0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Received</div>
+      <div class="stat-value leaf mono" id="hdReceived">₹0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value clay mono" id="hdPending">₹0</div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="all">All students</button>
+    <button class="tabbtn" data-tab="pending">Pending</button>
+    <button class="tabbtn" data-tab="paid">Paid</button>
+    <button class="tabbtn" data-tab="settings">Settings</button>
+  </div>
+
+  <div class="card" id="hdTabContent"></div>
+</div>
+
+<!-- ============ SCREEN: STUDENT JOIN ============ -->
+<div class="screen narrow hidden" id="screen-student-join">
+  <h1 class="page-title">Join your mess</h1>
+  <p class="page-sub">Ask your mess owner for the Community ID and password — or scan their QR.</p>
+  <div class="card">
+    <label>Community ID</label>
+    <input type="text" id="sjId" placeholder="e.g. MESS2026">
+    <label>Password</label>
+    <input type="password" id="sjPass" placeholder="Community password">
+    <button class="btn btn-gold btn-block" id="sjJoinBtn" style="margin-top:18px;">Find community</button>
+    <div class="error-text hidden" id="sjError"></div>
+    <p class="hint" style="margin-top:14px; text-align:center;">Demo community to try: <span class="mono">MESS2026</span> / <span class="mono">demo123</span></p>
+  </div>
+</div>
+
+<!-- ============ SCREEN: STUDENT SIGNUP ============ -->
+<div class="screen narrow hidden" id="screen-student-signup">
+  <h1 class="page-title">Your profile</h1>
+  <p class="page-sub" id="ssJoiningText">Joining a community</p>
+  <div class="card">
+    <div class="file-row">
+      <div class="file-preview" id="ssAvatarPreview">Photo</div>
+      <div>
+        <label class="file-btn" for="ssAvatarInput">Upload profile photo</label>
+        <input type="file" id="ssAvatarInput" accept="image/*" class="hidden">
+      </div>
+    </div>
+
+    <label>Full name</label>
+    <input type="text" id="ssName" placeholder="Your full name">
+    <div class="row-2">
+      <div>
+        <label>Phone number</label>
+        <input type="tel" id="ssPhone" placeholder="98765 43210">
+      </div>
+      <div>
+        <label>Email ID</label>
+        <input type="email" id="ssEmail" placeholder="you@email.com">
+      </div>
+    </div>
+    <label>College name</label>
+    <input type="text" id="ssCollege" placeholder="Your college">
+
+    <div class="file-row" style="margin-top:14px;">
+      <div class="file-preview" id="ssProofPreview">ID</div>
+      <div>
+        <label class="file-btn" for="ssProofInput">Upload ID proof (optional)</label>
+        <input type="file" id="ssProofInput" accept="image/*" class="hidden">
+        <div class="hint">College ID card or Aadhar — used to verify you with the mess owner.</div>
+      </div>
+    </div>
+
+    <button class="btn btn-gold btn-block" id="ssContinueBtn" style="margin-top:20px;">Continue to plan</button>
+    <div class="error-text hidden" id="ssError"></div>
+  </div>
+</div>
+
+<!-- ============ SCREEN: STUDENT PLAN ============ -->
+<div class="screen narrow hidden" id="screen-student-plan">
+  <h1 class="page-title">Pick your plan</h1>
+  <p class="page-sub">Your monthly charge updates automatically based on what you pick.</p>
+  <div class="card">
+    <label>Meals</label>
+    <div class="plan-grid">
+      <div class="plan-option" data-plan="both">
+        <div class="pt">Lunch + Dinner</div>
+        <div class="ps">Both meals, every day</div>
+      </div>
+      <div class="plan-option" data-plan="one">
+        <div class="pt">One time</div>
+        <div class="ps">Just morning or night</div>
+      </div>
+    </div>
+
+    <div id="oneTimeSub" class="hidden">
+      <label>Which one?</label>
+      <div class="plan-grid">
+        <div class="plan-option" data-time="morning">
+          <div class="pt">☀️ Morning / Lunch</div>
+        </div>
+        <div class="plan-option" data-time="night">
+          <div class="pt">🌙 Night / Dinner</div>
+        </div>
+      </div>
+    </div>
+
+    <label>Start date</label>
+    <input type="date" id="spStartDate">
+    <div class="hint" id="spEndDateHint">Your cycle will run 30 days from your start date.</div>
+
+    <div class="card" style="background:var(--paper-2); border-color:var(--line); margin-top:18px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2);">This cycle</div>
+        <div style="font-family:'Sora',sans-serif; font-size:22px; font-weight:800;" class="mono" id="spAmount">₹0</div>
+      </div>
+      <div style="text-align:right; font-size:12px; color:var(--muted);" id="spDatesText"></div>
+    </div>
+
+    <button class="btn btn-gold btn-block" id="spPayBtn" style="margin-top:20px;">Continue to payment</button>
+    <div class="error-text hidden" id="spError"></div>
+  </div>
+</div>
+
+<!-- ============ SCREEN: STUDENT DASHBOARD ============ -->
+<div class="screen hidden" id="screen-student-dash">
+  <h1 class="page-title" id="sdMessName">Your mess</h1>
+  <p class="page-sub">Here's where your current cycle stands.</p>
+
+  <div class="card">
+    <div class="ring-wrap">
+      <div class="thali-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#F3ECDB" stroke-width="10"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#3F7A5C" stroke-width="10" stroke-linecap="round"
+                  id="sdRingProgress" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          <g stroke="#FBF7EE" stroke-width="3">
+            <line x1="60" y1="8" x2="60" y2="20"/>
+            <line x1="60" y1="100" x2="60" y2="112"/>
+            <line x1="8" y1="60" x2="20" y2="60"/>
+            <line x1="100" y1="60" x2="112" y2="60"/>
+          </g>
+        </svg>
+        <div class="thali-center">
+          <div class="num" id="sdDaysLeft">--</div>
+          <div class="lbl">days left</div>
+        </div>
+      </div>
+      <div class="ring-info">
+        <div class="rk">Plan</div>
+        <div class="rv" id="sdPlan">—</div>
+        <div class="rk">Cycle</div>
+        <div class="rv mono" id="sdCycle" style="font-size:13px; font-weight:600;">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:15px;">Payment status</div>
+      <span class="status-pill" id="sdStatusPill">—</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="mono" style="font-size:22px; font-weight:700;" id="sdAmount">₹0</div>
+      <button class="btn btn-gold hidden" id="sdPayBtn">Pay now</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:15px; margin-bottom:10px;">Mess instructions</div>
+    <div class="instructions-box" id="sdInstructions">—</div>
+  </div>
+</div>
+
+<!-- ============ PAYMENT MODAL ============ -->
+<div class="modal-overlay" id="payModalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="payModalClose">✕</button>
+    <h3 id="payModalTitle">Pay your mess</h3>
+    <p style="font-size:12.5px; color:var(--muted); margin:0;">via UPI to <span class="mono" id="payModalUpi">—</span></p>
+    <div class="amount-big mono" id="payModalAmount">₹0</div>
+    <img class="qr-img" id="payModalQr" style="width:130px;height:130px;" alt="Payment QR">
+    <div class="demo-flag">
+      ⚠️ Demo payment only — no real money moves here. A live version needs a real payment gateway (e.g. Razorpay/UPI intent) connected to the host's bank account.
+    </div>
+    <button class="btn btn-gold btn-block" id="payModalConfirm">I've paid — mark as done</button>
+  </div>
+</div>
+
+<!-- ============ STUDENT DETAIL MODAL (host side) ============ -->
+<div class="detail-modal-overlay" id="detailModalOverlay">
+  <div class="detail-modal" id="detailModalBody"></div>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+   Everything lives in memory only — refreshing the page resets
+   the demo. A real product needs a backend + database here.
+============================================================ */
+let role = null; // 'host' | 'student'
+let host = null; // active community object when in host mode
+let studentSession = { community: null, profile: {}, plan: null, timeOfDay: null, startDate: null, endDate: null, amount: 0, paid: false };
+let hostActiveTab = 'all';
+
+function uid(prefix){ return prefix + Math.floor(1000 + Math.random()*9000); }
+function fmtMoney(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
+function addDays(dateStr, days){
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+function daysBetween(a,b){
+  return Math.round((new Date(b) - new Date(a)) / (1000*60*60*24));
+}
+function qrUrl(data, size){
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size||180}x${size||180}&data=${encodeURIComponent(data)}`;
+}
+
+// ---- Demo seed community, so the Student flow is testable standalone ----
+const communities = {
+  'MESS2026': {
+    id: 'MESS2026', password: 'demo123', name: 'Sharma Mess',
+    monthlyCharge: 2200, yearlyCharge: 24000, upiId: 'sharmamess@upi',
+    instructions: 'Lunch: 12:00–2:00 PM\nDinner: 8:00–10:00 PM\nMess closed on Sundays.\nCarry your own tiffin for Sunday takeaway.',
+    subscriptionStatus: 'active', subscriptionEnd: addDays(new Date().toISOString().slice(0,10), 20),
+    students: [
+      { id:'S1', name:'Ankit Verma', phone:'98765 11111', college:'IIT Roorkee', email:'ankit@mail.com', avatar:null,
+        plan:'both', timeOfDay:null, startDate: addDays(new Date().toISOString().slice(0,10), -12), endDate: addDays(new Date().toISOString().slice(0,10), 18),
+        amount: 2200, paid: true, paidOn: addDays(new Date().toISOString().slice(0,10), -12) },
+      { id:'S2', name:'Priya Nair', phone:'98765 22222', college:'DU North Campus', email:'priya@mail.com', avatar:null,
+        plan:'one', timeOfDay:'night', startDate: addDays(new Date().toISOString().slice(0,10), -25), endDate: addDays(new Date().toISOString().slice(0,10), 5),
+        amount: 1300, paid: true, paidOn: addDays(new Date().toISOString().slice(0,10), -25) },
+      { id:'S3', name:'Rahul Mehta', phone:'98765 33333', college:'NSIT Delhi', email:'rahul@mail.com', avatar:null,
+        plan:'both', timeOfDay:null, startDate: addDays(new Date().toISOString().slice(0,10), -33), endDate: addDays(new Date().toISOString().slice(0,10), -3),
+        amount: 2200, paid: false, paidOn: null },
+    ]
+  }
+};
+
+// ---- Screen helpers ----
+const screens = ['landing','host-onboard','host-created','host-dash','student-join','student-signup','student-plan','student-dash'];
+function showScreen(name){
+  screens.forEach(s => document.getElementById('screen-'+s).classList.toggle('hidden', s !== name));
+  window.scrollTo(0,0);
+}
+function setTopbar(){
+  const chip = document.getElementById('roleChip');
+  const switchBtn = document.getElementById('switchRoleBtn');
+  if (role){
+    chip.textContent = role === 'host' ? '🍛 Host mode' : '🎓 Student mode';
+    chip.classList.remove('hidden');
+    switchBtn.classList.remove('hidden');
+  } else {
+    chip.classList.add('hidden');
+    switchBtn.classList.add('hidden');
+  }
+}
+
+document.getElementById('switchRoleBtn').addEventListener('click', () => {
+  role = null; host = null;
+  setTopbar();
+  showScreen('landing');
+});
+
+// ================= LANDING =================
+document.getElementById('pickHost').addEventListener('click', () => {
+  role = 'host'; setTopbar();
+  showScreen('host-onboard');
+});
+document.getElementById('pickStudent').addEventListener('click', () => {
+  role = 'student'; setTopbar();
+  showScreen('student-join');
+});
+
+// ================= HOST ONBOARDING =================
+let hostSubPlan = 'yearly';
+document.getElementById('subMonthlyOpt').addEventListener('click', () => {
+  hostSubPlan = 'monthly';
+  document.getElementById('subMonthlyOpt').classList.add('selected');
+  document.getElementById('subYearlyOpt').classList.remove('selected');
+});
+document.getElementById('subYearlyOpt').addEventListener('click', () => {
+  hostSubPlan = 'yearly';
+  document.getElementById('subYearlyOpt').classList.add('selected');
+  document.getElementById('subMonthlyOpt').classList.remove('selected');
+});
+
+document.getElementById('hoCreateBtn').addEventListener('click', () => {
+  const name = document.getElementById('hoMessName').value.trim();
+  const monthly = parseFloat(document.getElementById('hoMonthly').value);
+  const yearly = parseFloat(document.getElementById('hoYearly').value);
+  const upi = document.getElementById('hoUpi').value.trim();
+  const instructions = document.getElementById('hoInstructions').value.trim();
+  const errEl = document.getElementById('hoError');
+
+  if (!name || !monthly || !upi){
+    errEl.textContent = 'Please fill in the mess name, monthly charge, and UPI ID.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  errEl.classList.add('hidden');
+
+  const id = uid('MESS');
+  const password = Math.random().toString(36).slice(2, 8);
+  const today = new Date().toISOString().slice(0,10);
+
+  host = {
+    id, password, name,
+    monthlyCharge: monthly, yearlyCharge: yearly || monthly * 11,
+    upiId: upi, instructions: instructions || 'Add your mess timings and rules here.',
+    subscriptionStatus: 'active',
+    subscriptionPlan: hostSubPlan,
+    subscriptionEnd: addDays(today, hostSubPlan === 'monthly' ? 30 : 365),
+    students: []
+  };
+  communities[id] = host;
+
+  document.getElementById('hcIdPill').textContent = id;
+  document.getElementById('hcPassPill').textContent = password;
+  document.getElementById('hcQrImg').src = qrUrl(id, 180);
+  showScreen('host-created');
+});
+
+document.getElementById('hcGoDashboard').addEventListener('click', () => {
+  renderHostDashboard();
+  showScreen('host-dash');
+});
+
+// ================= HOST DASHBOARD =================
+function subscriptionState(h){
+  const today = new Date().toISOString().slice(0,10);
+  const diff = daysBetween(today, h.subscriptionEnd); // positive = days left, negative = days overdue
+  if (diff >= 0) return { state:'active', daysLeft: diff };
+  if (diff >= -5) return { state:'grace', daysOverdue: -diff };
+  return { state:'expired', daysOverdue: -diff };
+}
+
+function renderSubBanner(h){
+  const el = document.getElementById('hdSubBanner');
+  const s = subscriptionState(h);
+  if (s.state === 'active'){
+    el.className = 'sub-banner active';
+    el.innerHTML = `<span>✅ Subscription active — renews in <strong>${s.daysLeft} day${s.daysLeft===1?'':'s'}</strong></span>`;
+  } else if (s.state === 'grace'){
+    el.className = 'sub-banner grace';
+    el.innerHTML = `<span>⏳ Subscription lapsed ${s.daysOverdue} day(s) ago — you have until day 5 to renew before the dashboard locks.</span><button class="btn btn-gold" id="renewBtn">Renew now</button>`;
+  } else {
+    el.className = 'sub-banner expired';
+    el.innerHTML = `<span>🔒 Subscription expired — dashboard is read-only until you renew.</span><button class="btn btn-gold" id="renewBtn">Renew now</button>`;
+  }
+  const renewBtn = document.getElementById('renewBtn');
+  if (renewBtn){
+    renewBtn.addEventListener('click', () => {
+      const today = new Date().toISOString().slice(0,10);
+      h.subscriptionEnd = addDays(today, h.subscriptionPlan === 'monthly' ? 30 : 365);
+      renderHostDashboard();
+    });
+  }
+}
+
+function renderHostDashboard(){
+  document.getElementById('hdMessName').textContent = host.name;
+  renderSubBanner(host);
+
+  const total = host.students.length;
+  const expected = host.students.reduce((s,st) => s + st.amount, 0);
+  const received = host.students.filter(s=>s.paid).reduce((s,st) => s + st.amount, 0);
+  const pending = expected - received;
+
+  document.getElementById('hdTotalStudents').textContent = total;
+  document.getElementById('hdExpected').textContent = fmtMoney(expected);
+  document.getElementById('hdReceived').textContent = fmtMoney(received);
+  document.getElementById('hdPending').textContent = fmtMoney(pending);
+
+  renderHostTab();
+}
+
+document.querySelectorAll('.tabbtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    hostActiveTab = btn.dataset.tab;
+    renderHostTab();
+  });
+});
+
+function studentMealLabel(s){
+  if (s.plan === 'both') return 'Lunch + Dinner';
+  return s.timeOfDay === 'morning' ? 'Morning only' : 'Night only';
+}
+
+function renderHostTab(){
+  const container = document.getElementById('hdTabContent');
+  if (hostActiveTab === 'settings'){
+    container.innerHTML = `
+      <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:15px; margin-bottom:14px;">Mess settings</div>
+      <div class="qr-box">
+        <img class="qr-img" src="${qrUrl(host.id,150)}" alt="join qr">
+        <div>
+          <div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2);">Community ID</div>
+          <div class="id-pill mono">${host.id} <button class="copy-btn" onclick="navigator.clipboard.writeText('${host.id}')">copy</button></div>
+          <div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted-2); margin-top:10px;">Password</div>
+          <div class="id-pill mono">${host.password} <button class="copy-btn" onclick="navigator.clipboard.writeText('${host.password}')">copy</button></div>
+        </div>
+      </div>
+      <label>Monthly charge (₹)</label>
+      <input type="number" id="setMonthly" value="${host.monthlyCharge}">
+      <label>Yearly charge (₹)</label>
+      <input type="number" id="setYearly" value="${host.yearlyCharge}">
+      <label>UPI ID</label>
+      <input type="text" id="setUpi" value="${host.upiId}">
+      <label>Instructions for students</label>
+      <textarea id="setInstructions">${host.instructions}</textarea>
+      <button class="btn btn-ink" id="saveSettingsBtn" style="margin-top:14px;">Save changes</button>
+      <span id="savedNote" style="margin-left:10px; font-size:12px; color:var(--leaf); display:none;">Saved ✓</span>
+    `;
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      host.monthlyCharge = parseFloat(document.getElementById('setMonthly').value) || host.monthlyCharge;
+      host.yearlyCharge = parseFloat(document.getElementById('setYearly').value) || host.yearlyCharge;
+      host.upiId = document.getElementById('setUpi').value.trim() || host.upiId;
+      host.instructions = document.getElementById('setInstructions').value.trim() || host.instructions;
+      const note = document.getElementById('savedNote');
+      note.style.display = 'inline';
+      setTimeout(() => note.style.display = 'none', 1800);
+    });
+    return;
+  }
+
+  let list = host.students;
+  if (hostActiveTab === 'pending') list = list.filter(s => !s.paid);
+  if (hostActiveTab === 'paid') list = list.filter(s => s.paid);
+
+  if (list.length === 0){
+    container.innerHTML = `<div class="empty-note">No students in this view yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  list.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'student-row';
+    row.innerHTML = `
+      <div class="avatar-circle">${s.avatar ? `<img src="${s.avatar}">` : s.name.charAt(0)}</div>
+      <div class="student-main">
+        <div class="student-name">${s.name}</div>
+        <div class="student-sub">${studentMealLabel(s)} · ${s.college}</div>
+      </div>
+      <span class="status-pill ${s.paid ? 'paid' : 'pending'}">${s.paid ? 'Paid' : 'Pending'}</span>
+      <div class="amount-text mono">${fmtMoney(s.amount)}</div>
+    `;
+    row.addEventListener('click', () => openStudentDetail(s));
+    container.appendChild(row);
+  });
+}
+
+function openStudentDetail(s){
+  const overlay = document.getElementById('detailModalOverlay');
+  const body = document.getElementById('detailModalBody');
+  body.innerHTML = `
+    <button class="modal-close" id="detailClose">✕</button>
+    <div style="display:flex; gap:14px; align-items:center; margin-bottom:18px;">
+      <div class="avatar-circle" style="width:52px;height:52px;font-size:18px;">${s.avatar ? `<img src="${s.avatar}">` : s.name.charAt(0)}</div>
+      <div>
+        <div style="font-family:'Sora',sans-serif; font-weight:700; font-size:17px;">${s.name}</div>
+        <div style="font-size:12.5px; color:var(--muted);">${s.college}</div>
+      </div>
+    </div>
+    <div class="row-2" style="margin-bottom:6px;">
+      <div><label>Phone</label><div class="mono" style="font-size:13px;">${s.phone}</div></div>
+      <div><label>Email</label><div class="mono" style="font-size:13px;">${s.email}</div></div>
+    </div>
+    <div class="row-2">
+      <div><label>Plan</label><div style="font-size:13px;">${studentMealLabel(s)}</div></div>
+      <div><label>Status</label><span class="status-pill ${s.paid?'paid':'pending'}">${s.paid?'Paid':'Pending'}</span></div>
+    </div>
+    <div class="row-2">
+      <div><label>Cycle start</label><div class="mono" style="font-size:13px;">${s.startDate}</div></div>
+      <div><label>Cycle end</label><div class="mono" style="font-size:13px;">${s.endDate}</div></div>
+    </div>
+    <label>Amount this cycle</label>
+    <div class="mono" style="font-size:20px; font-weight:700;">${fmtMoney(s.amount)}</div>
+    ${!s.paid ? `<button class="btn btn-leaf btn-block" style="background:var(--leaf); color:white; margin-top:16px;" id="markPaidBtn">Mark as received</button>` : ''}
+  `;
+  overlay.classList.add('open');
+  document.getElementById('detailClose').addEventListener('click', () => overlay.classList.remove('open'));
+  const markPaidBtn = document.getElementById('markPaidBtn');
+  if (markPaidBtn){
+    markPaidBtn.addEventListener('click', () => {
+      s.paid = true; s.paidOn = new Date().toISOString().slice(0,10);
+      overlay.classList.remove('open');
+      renderHostDashboard();
+    });
+  }
+}
+document.getElementById('detailModalOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'detailModalOverlay') e.currentTarget.classList.remove('open');
+});
+
+// ================= STUDENT: JOIN =================
+document.getElementById('sjJoinBtn').addEventListener('click', () => {
+  const id = document.getElementById('sjId').value.trim().toUpperCase();
+  const pass = document.getElementById('sjPass').value.trim();
+  const errEl = document.getElementById('sjError');
+  const community = communities[id];
+
+  if (!community || community.password !== pass){
+    errEl.textContent = 'No match — check the Community ID and password with your mess owner.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  errEl.classList.add('hidden');
+  studentSession.community = community;
+  document.getElementById('ssJoiningText').textContent = `Joining ${community.name}`;
+  showScreen('student-signup');
+});
+
+// ================= STUDENT: SIGNUP =================
+function wireFileInput(inputId, previewId){
+  document.getElementById(inputId).addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      document.getElementById(previewId).innerHTML = `<img src="${ev.target.result}">`;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+wireFileInput('ssAvatarInput', 'ssAvatarPreview');
+wireFileInput('ssProofInput', 'ssProofPreview');
+
+document.getElementById('ssContinueBtn').addEventListener('click', () => {
+  const name = document.getElementById('ssName').value.trim();
+  const phone = document.getElementById('ssPhone').value.trim();
+  const email = document.getElementById('ssEmail').value.trim();
+  const college = document.getElementById('ssCollege').value.trim();
+  const errEl = document.getElementById('ssError');
+
+  if (!name || !phone || !college || !email){
+    errEl.textContent = 'Please fill in your name, phone, email, and college.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  errEl.classList.add('hidden');
+
+  const avatarImg = document.querySelector('#ssAvatarPreview img');
+  studentSession.profile = { name, phone, email, college, avatar: avatarImg ? avatarImg.src : null };
+
+  document.getElementById('spStartDate').value = new Date().toISOString().slice(0,10);
+  updatePlanSummary();
+  showScreen('student-plan');
+});
+
+// ================= STUDENT: PLAN =================
+document.querySelectorAll('#screen-student-plan .plan-option[data-plan]').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#screen-student-plan .plan-option[data-plan]').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    studentSession.plan = opt.dataset.plan;
+    document.getElementById('oneTimeSub').classList.toggle('hidden', opt.dataset.plan !== 'one');
+    if (opt.dataset.plan === 'both') studentSession.timeOfDay = null;
+    updatePlanSummary();
+  });
+});
+document.querySelectorAll('#screen-student-plan .plan-option[data-time]').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#screen-student-plan .plan-option[data-time]').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    studentSession.timeOfDay = opt.dataset.time;
+    updatePlanSummary();
+  });
+});
+document.getElementById('spStartDate').addEventListener('change', updatePlanSummary);
+
+function updatePlanSummary(){
+  const community = studentSession.community;
+  if (!community) return;
+  const start = document.getElementById('spStartDate').value || new Date().toISOString().slice(0,10);
+  const end = addDays(start, 30);
+  let amount = community.monthlyCharge;
+  if (studentSession.plan === 'one') amount = Math.round(community.monthlyCharge * 0.6);
+
+  document.getElementById('spAmount').textContent = fmtMoney(amount);
+  document.getElementById('spDatesText').innerHTML = `${start}<br>to ${end}`;
+  studentSession.startDate = start;
+  studentSession.endDate = end;
+  studentSession.amount = amount;
+}
+
+document.getElementById('spPayBtn').addEventListener('click', () => {
+  const errEl = document.getElementById('spError');
+  if (!studentSession.plan || (studentSession.plan === 'one' && !studentSession.timeOfDay)){
+    errEl.textContent = 'Pick a meal plan first.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  errEl.classList.add('hidden');
+  openPaymentModal({
+    title: 'Pay your mess',
+    amount: studentSession.amount,
+    upi: studentSession.community.upiId,
+    onConfirm: () => {
+      const community = studentSession.community;
+      const newStudent = {
+        id: uid('S'),
+        name: studentSession.profile.name, phone: studentSession.profile.phone,
+        college: studentSession.profile.college, email: studentSession.profile.email,
+        avatar: studentSession.profile.avatar,
+        plan: studentSession.plan, timeOfDay: studentSession.timeOfDay,
+        startDate: studentSession.startDate, endDate: studentSession.endDate,
+        amount: studentSession.amount, paid: true, paidOn: new Date().toISOString().slice(0,10)
+      };
+      community.students.push(newStudent);
+      studentSession.currentRecord = newStudent;
+      renderStudentDashboard();
+      showScreen('student-dash');
+    }
+  });
+});
+
+// ================= STUDENT: DASHBOARD =================
+function renderStudentDashboard(){
+  const community = studentSession.community;
+  const rec = studentSession.currentRecord;
+  document.getElementById('sdMessName').textContent = community.name;
+  document.getElementById('sdPlan').textContent = studentMealLabel(rec);
+  document.getElementById('sdCycle').textContent = `${rec.startDate} → ${rec.endDate}`;
+  document.getElementById('sdInstructions').textContent = community.instructions;
+
+  const today = new Date().toISOString().slice(0,10);
+  const totalDays = daysBetween(rec.startDate, rec.endDate);
+  const daysLeft = Math.max(0, daysBetween(today, rec.endDate));
+  const progress = Math.min(1, Math.max(0, (totalDays - daysLeft) / totalDays));
+
+  const circumference = 326.7;
+  const ring = document.getElementById('sdRingProgress');
+  ring.setAttribute('stroke-dasharray', circumference);
+  ring.setAttribute('stroke-dashoffset', circumference * (1 - progress));
+  ring.setAttribute('stroke', daysLeft <= 3 ? '#C1502E' : '#3F7A5C');
+  document.getElementById('sdDaysLeft').textContent = daysLeft;
+
+  const statusPill = document.getElementById('sdStatusPill');
+  const payBtn = document.getElementById('sdPayBtn');
+  document.getElementById('sdAmount').textContent = fmtMoney(rec.amount);
+
+  if (rec.paid && daysLeft > 0){
+    statusPill.textContent = 'Paid';
+    statusPill.className = 'status-pill paid';
+    payBtn.classList.add('hidden');
+  } else if (daysLeft <= 0){
+    statusPill.textContent = 'Cycle ended';
+    statusPill.className = 'status-pill pending';
+    payBtn.textContent = 'Renew for next cycle';
+    payBtn.classList.remove('hidden');
+  } else {
+    statusPill.textContent = 'Pending';
+    statusPill.className = 'status-pill pending';
+    payBtn.textContent = 'Pay now';
+    payBtn.classList.remove('hidden');
+  }
+}
+
+document.getElementById('sdPayBtn').addEventListener('click', () => {
+  const rec = studentSession.currentRecord;
+  const community = studentSession.community;
+  const cycleEnded = daysBetween(new Date().toISOString().slice(0,10), rec.endDate) <= 0;
+  openPaymentModal({
+    title: cycleEnded ? 'Renew your mess' : 'Pay your mess',
+    amount: rec.amount,
+    upi: community.upiId,
+    onConfirm: () => {
+      if (cycleEnded){
+        rec.startDate = rec.endDate;
+        rec.endDate = addDays(rec.startDate, 30);
+      }
+      rec.paid = true; rec.paidOn = new Date().toISOString().slice(0,10);
+      renderStudentDashboard();
+    }
+  });
+});
+
+// ================= PAYMENT MODAL (shared) =================
+let pendingPaymentConfirm = null;
+function openPaymentModal({title, amount, upi, onConfirm}){
+  document.getElementById('payModalTitle').textContent = title;
+  document.getElementById('payModalAmount').textContent = fmtMoney(amount);
+  document.getElementById('payModalUpi').textContent = upi;
+  document.getElementById('payModalQr').src = qrUrl(`upi://pay?pa=${upi}&am=${amount}`, 130);
+  pendingPaymentConfirm = onConfirm;
+  document.getElementById('payModalOverlay').classList.add('open');
+}
+document.getElementById('payModalClose').addEventListener('click', () => {
+  document.getElementById('payModalOverlay').classList.remove('open');
+});
+document.getElementById('payModalOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'payModalOverlay') e.currentTarget.classList.remove('open');
+});
+document.getElementById('payModalConfirm').addEventListener('click', () => {
+  document.getElementById('payModalOverlay').classList.remove('open');
+  if (pendingPaymentConfirm) pendingPaymentConfirm();
+});
+
+// init
+setTopbar();
+showScreen('landing');
+</script>
+
+</body>
+</html>
